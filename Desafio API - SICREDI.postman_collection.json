@@ -1,0 +1,313 @@
+{
+	"info": {
+		"_postman_id": "527f4448-f7ec-4461-9194-406e2da41c9d",
+		"name": "Desafio API - SICREDI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20284690"
+	},
+	"item": [
+		{
+			"name": "Insere uma nova simulação",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Cenário de teste 2.1: Realizar a criação de uma Simulação com todos atributos válidos.\r",
+							"// Dado que eu seja um usuário válido para acessar a API de simulação de crédito\r",
+							"// E for utilizar o seguinte Endpoint http://localhost:8080/api/v1/simulacoes\r",
+							"// E informar o CPF válido para criação da simulação\r",
+							"// E que no Body do Endpoint estejam sendo enviados os atributos seguindo as seguintes regras:\r",
+							"// CPF: OBRIGATÓRIO - Em formato de texto, sem virgula ou pontuação entre os números\r",
+							"// NOME: OBRIGATÓRIO - Texto informando o nome do Beneficiário\r",
+							"// EMAIL: OBRIGATÓRIO - Texto informando o Email do Beneficiário\r",
+							"// VALOR: OBRIGATÓRIO - Valor da Simulação deve ser igual ou maior que R$ 1.000 e menor ou igual que R$ 40.000\r",
+							"// PARCELA: OBRIGATÓRIO - número de parcelas para pagamento que deve ser igual ou maior que 2 e menor ou igual a 48\r",
+							"// SEGURO: OBRIGATÓRIO - Booleano true se com seguro e false se sem seguro\r",
+							"// Então espero que seja retornado o HTTP Status 201 e que todos os dados inseridos sejam retornados.\r",
+							"\r",
+							"var response_body = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Valida se a resposta é um Json, o Sucesso da requisição e a criação das variáveis ID e CPF\", function() {\r",
+							"\r",
+							"    pm.response.to.be.success;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"//VARIÁVEIS CRIADAS PARA AUTOMATIZAR O FLUXO DE INSERIR UMA NOVA SIMULAÇÃO ATÉ O DELETE DA MESMA.\r",
+							"//É NECESSÁRIO ALTERAR O CPF NO BODY DA REQUISIÇÃO, INSERINDO UM CPF VÁLIDO SEMPRE QUE A AUTOMAÇÃO SER EXECUTADA.\r",
+							"pm.globals.set(\"id\", response_body.id);\r",
+							"pm.globals.set(\"cpf\", response_body.cpf);\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nome\": \"Rafael S\",\r\n  \"cpf\": 1562578472899787,\r\n  \"email\": \"rafael.sqr1@gmail.com\",\r\n  \"valor\": 7200,\r\n  \"parcelas\": 6,\r\n  \"seguro\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server}}/simulacoes",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"simulacoes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retorna uma simulação através do CPF",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Cenário de teste 5.1: Consultar uma Simulação por CPF – cenário POSITIVO.\r",
+							"// Dado que eu seja um usuário válido para acessar a API de simulação de crédito\r",
+							"// E for utilizar o seguinte Endpoint http://localhost:8080/api/v1/simulacoes/{cpf}\t\r",
+							"// Quando enviar a requisição com um CPF e simulação valida \r",
+							"// Então espero que sejam retornados o HTTP Status 200 e a simulação valida\r",
+							"\r",
+							"var response_body = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Valida se a resposta é um Json, o Sucesso da requisição e a captura da variável CPF\", function() {\r",
+							"\r",
+							"    pm.response.to.be.success;\r",
+							"    pm.response.to.be.json;\r",
+							"\r",
+							"});\r",
+							"\r",
+							"//VARIÁVEIS CRIADAS PARA AUTOMATIZAR O FLUXO DE INSERIR UMA NOVA SIMULAÇÃO ATÉ O DELETE DA MESMA\r",
+							"pm.globals.set(\"id\", response_body.id);\r",
+							"pm.globals.set(\"cpf\", response_body.cpf);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/simulacoes/{{cpf}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"simulacoes",
+						"{{cpf}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Atualiza uma simulação existente através do CPF",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Cenário de teste 3.1: Alterar Simulação existente – cenário POSITIVO.\r",
+							"//Dado que eu seja um usuário válido para acessar a API de simulação de crédito\r",
+							"//E for utilizar o seguinte Endpoint http://localhost:8080/api/v1/simulacoes/{CPF}\r",
+							"//E informar o CPF válido da simulação em andamento\r",
+							"//E alterar qualquer atributo editável da simulação\r",
+							"//Quando esses atributos estiverem seguindo todas as regras de negócios informadas no cenário te teste 2.1 e os critérios de aceites informados desta task\r",
+							"//Então espero que seja retornado o HTTP Status 200 e a alteração seja realizada com sucesso durante a operação\r",
+							"\r",
+							"var response_body = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Valida se a resposta é um Json, o Sucesso da requisição e a captura das variáveis CPF e ID\", function() {\r",
+							"\r",
+							"    pm.response.to.be.success;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"//VARIÁVEIS CRIADAS PARA AUTOMATIZAR O FLUXO DE INSERIR UMA NOVA SIMULAÇÃO ATÉ O DELETE DA MESMA\r",
+							"pm.globals.set(\"id\", response_body.id);\r",
+							"pm.globals.set(\"cpf\", response_body.cpf);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"id\": {{id}},\r\n        \"nome\": \"Rafael SIQUEIRA PAULA\",\r\n        \"cpf\": \"1562578472899129\",\r\n        \"email\": \"rafael.sqr1@gmail.com.br\",\r\n        \"valor\": 5200.00,\r\n        \"parcelas\": 26,\r\n        \"seguro\": true\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server}}/simulacoes/{{cpf}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"simulacoes",
+						"{{cpf}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove uma simulação existente através do CPF",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Cenário de teste 6.1: Remover uma Simulação Cadastrada – cenário POSITIVO.\r",
+							"// Dado que eu seja um usuário válido para acessar a API de simulação de crédito\r",
+							"// E for utilizar o seguinte Endpoint http://localhost:8080/api/v1/simulacoes/{id}\t\r",
+							"// Quando enviar a requisição com um ID de uma operação valida \r",
+							"// Então espero que sejam retornados o HTTP Status 200 e que a mesma seja removida com sucesso\r",
+							"\r",
+							"var response_body = pm.response.success;\r",
+							"\r",
+							"pm.test(\"Valida o Sucesso da requisição,  a captura da variável ID e o DELETE da Simulação\", function() {\r",
+							"\r",
+							"    pm.response.to.be.success;\r",
+							"\r",
+							"});\r",
+							"\r",
+							"//VARIÁVEIS CRIADAS PARA AUTOMATIZAR O FLUXO DE INSERIR UMA NOVA SIMULAÇÃO ATÉ O DELETE DA MESMA\r",
+							"//pm.globals.set(\"id\", response_body.id);\r",
+							"//pm.globals.set(\"cpf\", response_body.cpf);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/simulacoes/{{id}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"simulacoes",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Consulta se um CPF possui ou não restrição",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Cenário de teste 1.1: Consultar um CPF sem restrição.\r",
+							"// Dado que eu seja um usuário válido para acessar a API de simulação de crédito\r",
+							"// E for utilizar o seguinte Endpoint http://localhost:8080/api/v1/restricoes/{CPF}\r",
+							"// Quando eu informar um CPF sem restrição durante a requisição\r",
+							"// Então espero que seja retornado o HTTP Status 204\r",
+							"\r",
+							"//Teste Tempo de Resposta\r",
+							"pm.test(\"Tempo de resposta aceitavel < 50ms \", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(50);\r",
+							"});\r",
+							"\r",
+							"//Teste de Retorno Status da API\r",
+							"pm.test(\"StatusComunicação API\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/restricoes/{{cpf}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"restricoes",
+						"{{cpf}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retorna todas as simulações existentes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Cenário de teste 4.1: Consultar todas as Simulações Cadastradas – cenário POSITIVO.\r",
+							"// Dado que eu seja um usuário válido para acessar a API de simulação de crédito\r",
+							"// E for utilizar o seguinte Endpoint http://localhost:8080/api/v1/simulacoes\r",
+							"// Quando enviar a requisição\r",
+							"// Então espero que seja retornado o HTTP Status 200 e todas as Simulações já cadastradas.\r",
+							"\r",
+							"\r",
+							"var response_body = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Valida se a resposta é um Json, o Sucesso da requisição e lista as Simulações\", function() {\r",
+							"\r",
+							"    pm.response.to.be.success;\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"//Teste Tempo de Resposta\r",
+							"pm.test(\"Tempo de resposta aceitavel < 50ms \", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(50);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/simulacoes",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"simulacoes"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
